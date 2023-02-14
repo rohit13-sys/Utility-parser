@@ -8,8 +8,7 @@ spring:
 #    url: jdbc:postgresql://192.168.1.4:5432/local_db
 #    username: postgres
 #    password: postgres
-#    url: jdbc:mysql://localhost:3306/local_db?createDatabaseIfNotExist=true
-    url: jdbc:mysql://172.18.64.1:3306/iapps?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/local_db?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
