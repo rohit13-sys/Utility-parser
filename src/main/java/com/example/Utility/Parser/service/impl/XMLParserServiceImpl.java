@@ -8,8 +8,9 @@ import com.example.Utility.Parser.service.XMLParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
@@ -17,7 +18,6 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -38,12 +38,11 @@ public class XMLParserServiceImpl implements XMLParserService {
     private DataRepository dataRepository;
 
     @Override
-    public XmlDataResponse xmlParser(MultipartFile file, String fileName) throws ParserConfigurationException, IOException, SAXException, JAXBException {
+    public XmlDataResponse xmlParser(MultipartFile file, String fileName) throws JAXBException {
 
         try {
 
             XMLDataRequest data = new XMLDataRequest();
-
 
             JAXBContext jaxbContext;
 
@@ -64,7 +63,7 @@ public class XMLParserServiceImpl implements XMLParserService {
             String formattedDate = getUploadTime();
             data.setUploadTime(formattedDate);
             data.setFileName(fileName);
-            System.out.println(data);
+//            System.out.println(data);
 
             //save to database
             saveDataToDB(data);
@@ -80,14 +79,47 @@ public class XMLParserServiceImpl implements XMLParserService {
     }
 
     @Override
-    public List<XmlDataResponse> xmlData() {
-        List<XmlData> dataList=dataRepository.findAll();
-        List<XmlDataResponse> responseList;
-        responseList=dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
-        return responseList;
+    public List<XmlDataResponse> xmlData(String newsPaperName,Pageable pageable) {
+        List<XmlDataResponse> response = new ArrayList<>();
+        List<XmlData> dataList;
+
+
+//        if (pageSize == null && pageNo == null) {
+//            if (newsPaperName != null) {
+//                Page<XmlData> list = dataRepository.findByNewsPaperNameContains(newsPaperName,PageRequest.of(pageNo,pageSize));
+//                response = list.stream().map(e -> mapToResponse(e)).collect(Collectors.toList());
+//            } else {Page<XmlData> list = dataRepository.findByNewsPaperNameContains(newsPaperName,PageRequest.of(pageNo,pageSize));
+//                response = dataList.stream().map(e -> mapToResponse(e)).collect(Collectors.toList());
+//            }
+//        } else if (pageNo != null) {
+//            if (pageSize == null || pageSize == 0) {
+//                XmlDataResponse obj = new XmlDataResponse();
+//                obj.setErrorMsg("Please give pageSize more than 0");
+//                response.add(obj);
+//            } else {
+//                if (newsPaperName != null) {
+//                    Page<XmlData> page = dataRepository.findByNewsPaperNameContains(newsPaperName, PageRequest.of(pageNo, pageSize));
+//                    dataList = page.getContent();
+//                    response = dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
+//                } else {
+//                    Page<XmlData> page = dataRepository.findAll(PageRequest.of(pageNo, pageSize));
+//                    dataList = page.getContent();
+//                    response = dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
+//                }
+//            }
+//        } else {
+//            XmlDataResponse obj = new XmlDataResponse();
+//            obj.setErrorMsg("Please give pageNo");
+//            response.add(obj);
+//        }
+        Page<XmlData> list = dataRepository.findAllByNewsPaperNameContains(newsPaperName,pageable);
+        List<XmlData> data=list.getContent();
+        response=data.stream().map(this::mapToResponse).collect(Collectors.toList());
+        return response;
     }
 
 
+    @Transactional
     public void saveDataToDB(XMLDataRequest req) {
         XmlData data = new XmlData();
         data.setDpi(req.getDeviceInfo().getScreenInfo().getDpi());
@@ -118,25 +150,8 @@ public class XMLParserServiceImpl implements XMLParserService {
         return response;
     }
 
-
-    @Override
-    public List<XmlDataResponse> xmlDataByPaging(int pageNo) {
-//        Sort sort = Sort.by(sortBy);
-        Page<XmlData> page = dataRepository.findAll(PageRequest.of(pageNo, 5));
-        List<XmlData> dataList=page.getContent();
-        System.out.println(page.getTotalElements());
-        System.out.println(page.getNumberOfElements());
-        System.out.println(page.getTotalPages());
-        List<XmlDataResponse> responseList;
-        responseList=dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
-        return responseList;
-    }
-
-
     public XmlDataResponse mapToResponse(XmlData data) {
-        System.out.println("Page obj"+data.toString());
-        XmlDataResponse response=new XmlDataResponse();
-//        response.setDpi();
+        XmlDataResponse response = new XmlDataResponse();
         response.setUploadTime(data.getUploadTime());
         response.setDpi(data.getDpi());
         response.setHeight(data.getHeight());
@@ -146,8 +161,6 @@ public class XMLParserServiceImpl implements XMLParserService {
         return response;
     }
 
-
-
     private Validator initValidator(String xsdPath) throws SAXException, FileNotFoundException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Source schemaFile = new StreamSource(getFile(xsdPath));
@@ -156,7 +169,7 @@ public class XMLParserServiceImpl implements XMLParserService {
     }
 
     @Override
-    public boolean isValid(String xsdPath,File file) throws IOException, SAXException {
+    public boolean isValid(String xsdPath, File file) throws IOException, SAXException {
         Validator validator = initValidator(xsdPath);
         try {
             validator.validate(new StreamSource(file));
@@ -166,7 +179,7 @@ public class XMLParserServiceImpl implements XMLParserService {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
+
     @Override
     public File convert(MultipartFile file) throws IOException {
         File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
@@ -177,9 +190,11 @@ public class XMLParserServiceImpl implements XMLParserService {
         return convFile;
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
-    public XmlDataResponse xmlDataByName(String newsPaperName) {
-        return dataRepository.findByName(newsPaperName).get();
+    public List<XmlDataResponse> allXmlData(Pageable pageable) {
+        Page<XmlData> page = dataRepository.findAll(pageable);
+        List<XmlData> pageData=page.getContent();
+        List<XmlDataResponse> response=pageData.stream().map(this::mapToResponse).collect(Collectors.toList());
+        return response;
     }
 }

@@ -4,6 +4,8 @@ import com.example.Utility.Parser.dto.XMLDataRequest;
 import com.example.Utility.Parser.dto.XmlDataResponse;
 import com.example.Utility.Parser.service.XMLParserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/xml-parser/")
+@RequestMapping("/xml-parser")
 public class DataController {
     @Autowired
     private XMLParserService xmlParserService;
@@ -34,7 +37,7 @@ public class DataController {
 
 
             //checking whether xml file is valid or not as given in xsd schema
-            boolean isValid = xmlParserService.isValid("data/parse.xsd", xmlFile);
+            boolean isValid = xmlParserService.isValid(System.getProperty("user.dir")+"/data/parse.xsd", xmlFile);
 
             if (isValid) {
                 String fileName = file.getOriginalFilename();
@@ -51,7 +54,7 @@ public class DataController {
 
             }
 
-        } catch (ParserConfigurationException | IOException | SAXException | JAXBException | RuntimeException e) {
+        } catch (JAXBException | RuntimeException | SAXException e) {
             response.setErrorMsg("Invalid Xml file");
 
             xmlFile.delete();
@@ -60,23 +63,21 @@ public class DataController {
     }
 
 
-    @GetMapping("/data")
-    public ResponseEntity<List<XmlDataResponse>> xmlDataAll() {
-        List<XmlDataResponse> response;
-        response = xmlParserService.xmlData();
+//
+    @GetMapping()
+    public ResponseEntity<List<XmlDataResponse>> xmlDataByName(@RequestParam(name = "newsPaperName", required = false) String newsPaperName , Pageable pageable) {
+        List<XmlDataResponse> response = new ArrayList<>();
+        String currentDirectory = System.getProperty("user.dir");
+        System.out.println(currentDirectory);
+        if(newsPaperName!=null){
+            response=xmlParserService.xmlData(newsPaperName,pageable);
+            System.out.println(response.size());
+        }else {
+            response=xmlParserService.allXmlData(pageable);
+            System.out.println(response.size());
+        }
+
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("name/data/")
-    public ResponseEntity<List<XmlDataResponse>> xmlDataByPaging(@PathVariable("pageNo") int pageNo) {
-        List<XmlDataResponse> response;
-        response = xmlParserService.xmlDataByPaging(pageNo);
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-    }
-
-    @GetMapping("/{newsPaperName}")
-    public ResponseEntity<XmlDataResponse> xmlDataByNewsPaperName(@PathVariable("newsPaperName") String  newsPaperName){
-        XmlDataResponse response=xmlParserService.xmlDataByName(newsPaperName);
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-    }
 }

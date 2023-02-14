@@ -5,15 +5,27 @@ spring:
   application:
     name: XML-Parser
   datasource:
-    url: jdbc:postgresql://192.168.1.4:5432/local_db
-    username: postgres
-    password: postgres
+#    url: jdbc:postgresql://192.168.1.4:5432/local_db
+#    username: postgres
+#    password: postgres
+#    url: jdbc:mysql://localhost:3306/local_db?createDatabaseIfNotExist=true
+    url: jdbc:mysql://172.18.64.1:3306/iapps?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
 
+  liquibase:
+    changeLog: classpath:/db/changelog/db.changelog-master.xml
+    default-schema: local_db
   jpa:
     show-sql: true
     hibernate:
+      hibernate:
+        naming: # must tell spring/jpa/hibernate to use the column names as specified, not snake case
+#          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+#        dialect: org.hibernate.dialect.PostgreSQL10Dialect
         format_sql: true
