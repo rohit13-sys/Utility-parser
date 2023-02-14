@@ -84,11 +84,6 @@ class UtilityParserApplicationServiceTests {
 		return dataList;
 	}
 
-//	public Page<XmlData> pageData(){
-//		XmlData data=response();
-//		Page<XmlData> page= new Pageable(PageRequest.of(0,2));
-//	}
-
 	public XmlData response(){
 		XmlData data=new XmlData();
 		data.setDpi("160");
