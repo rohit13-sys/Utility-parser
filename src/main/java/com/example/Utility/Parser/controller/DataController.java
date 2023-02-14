@@ -26,7 +26,7 @@ public class DataController {
     @Autowired
     private XMLParserService xmlParserService;
 
-    @PostMapping
+    @PostMapping("/parse")
     public ResponseEntity<XmlDataResponse> xmlparser(@RequestPart("file") MultipartFile file) throws IOException {
 
         XmlDataResponse response = new XmlDataResponse();
@@ -63,8 +63,7 @@ public class DataController {
     }
 
 
-//
-    @GetMapping()
+    @GetMapping("/getXmlData")
     public ResponseEntity<List<XmlDataResponse>> xmlDataByName(@RequestParam(name = "newsPaperName", required = false) String newsPaperName , Pageable pageable) {
         List<XmlDataResponse> response = new ArrayList<>();
         String currentDirectory = System.getProperty("user.dir");

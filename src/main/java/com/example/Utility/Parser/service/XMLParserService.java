@@ -16,16 +16,10 @@ public interface XMLParserService {
 
     List<XmlDataResponse> xmlData(String newsPaperName,Pageable pageable);
 
-//    List<XmlDataResponse> xmlDataByPaging(int pageNo,int pageSize);
-
     boolean isValid(String xsdPath, File file) throws IOException, SAXException;
-
 
     File convert(MultipartFile file) throws IOException;
 
     List<XmlDataResponse> allXmlData(Pageable pageable);
 
-//    List<XmlDataResponse> xmlDataByName(String newsPaperName);
-//
-//    List<XmlDataResponse> xmlDataByNameAndPaging(String newsPaperName, Pageable pageable);
 }

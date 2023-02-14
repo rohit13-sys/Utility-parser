@@ -82,36 +82,6 @@ public class XMLParserServiceImpl implements XMLParserService {
     public List<XmlDataResponse> xmlData(String newsPaperName,Pageable pageable) {
         List<XmlDataResponse> response = new ArrayList<>();
         List<XmlData> dataList;
-
-
-//        if (pageSize == null && pageNo == null) {
-//            if (newsPaperName != null) {
-//                Page<XmlData> list = dataRepository.findByNewsPaperNameContains(newsPaperName,PageRequest.of(pageNo,pageSize));
-//                response = list.stream().map(e -> mapToResponse(e)).collect(Collectors.toList());
-//            } else {Page<XmlData> list = dataRepository.findByNewsPaperNameContains(newsPaperName,PageRequest.of(pageNo,pageSize));
-//                response = dataList.stream().map(e -> mapToResponse(e)).collect(Collectors.toList());
-//            }
-//        } else if (pageNo != null) {
-//            if (pageSize == null || pageSize == 0) {
-//                XmlDataResponse obj = new XmlDataResponse();
-//                obj.setErrorMsg("Please give pageSize more than 0");
-//                response.add(obj);
-//            } else {
-//                if (newsPaperName != null) {
-//                    Page<XmlData> page = dataRepository.findByNewsPaperNameContains(newsPaperName, PageRequest.of(pageNo, pageSize));
-//                    dataList = page.getContent();
-//                    response = dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
-//                } else {
-//                    Page<XmlData> page = dataRepository.findAll(PageRequest.of(pageNo, pageSize));
-//                    dataList = page.getContent();
-//                    response = dataList.stream().map(this::mapToResponse).collect(Collectors.toList());
-//                }
-//            }
-//        } else {
-//            XmlDataResponse obj = new XmlDataResponse();
-//            obj.setErrorMsg("Please give pageNo");
-//            response.add(obj);
-//        }
         Page<XmlData> list = dataRepository.findAllByNewsPaperNameContains(newsPaperName,pageable);
         List<XmlData> data=list.getContent();
         response=data.stream().map(this::mapToResponse).collect(Collectors.toList());
