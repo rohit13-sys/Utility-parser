@@ -6,7 +6,9 @@
 
 <h4>Following are the Rest-EndPoints which are exposed  to execute operations like uploading xml file and validating them and persisting them in DataBase<h4>
 
-
+Change the port of applicatin according to your need in application.yml
+server:
+  port: 8082
 
 There is facility known as liquibase which can do all annoying Database related configurations for you like it can create DB automatically.
 You just have to give name of schema and some minor configurations
@@ -34,6 +36,17 @@ Please refer some configurations for liquibase which are done in /resource folde
              '/xml-parser?newsPaperName=abb&pageNo=0&pageSize=0'
            
        
+       
+If you want to run test cases please use below command as this is a maven project
+- mvn clean test
+
+If you want to make executable jar file then use command 
+- mvn clean install
+
+After executing above command jar file will be created with suffix :- "*-SNAPSHOT-0.0.1.jar"
+Then open cmd/terminal and go to path project/target/
+Execute java -jar {project-name}-SNAPSHOT-0.0.1.jar
+And your application will running on the given port from application.yml
    
    
    
