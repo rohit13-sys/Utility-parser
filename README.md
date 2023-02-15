@@ -16,7 +16,7 @@ Following are the Rest-EndPoints which are exposed  to execute operations like u
 - PostMapping :- 
           
    
-    /xml-parser/parse
+        /xml-parser/parse
    
           
     
@@ -26,7 +26,7 @@ Following are the Rest-EndPoints which are exposed  to execute operations like u
 - GetMapping :- 
         
 
-    /xml-parser/getXmlData?newsPaperName=""
+        /xml-parser/getXmlData?newsPaperName=""
    
   this api is used for getting newspaper data.
   if you want to search newspaper according to newspapernames then use
@@ -37,7 +37,7 @@ Following are the Rest-EndPoints which are exposed  to execute operations like u
   if you want some paginations features then feel free to insert more query parameters like pageNo and pageSize as shown below
   
   
-    '/xml-parser/getXmlData?newsPaperName=abb&pageNo=0&pageSize=0'
+        '/xml-parser/getXmlData?newsPaperName=abb&pageNo=0&pageSize=0'
            
        
        
