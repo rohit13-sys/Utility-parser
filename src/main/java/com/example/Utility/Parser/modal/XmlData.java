@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "xmldata")
+@Table(name = "xml_data")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,10 +17,9 @@ import java.util.Date;
 public class XmlData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "newsPaperName")
+    @Column(name = "news_paper_name")
     private String newsPaperName;
     @Column(name = "height")
     private String height;
@@ -30,9 +29,9 @@ public class XmlData {
     @Column(name = "dpi")
     private String dpi;
 
-    @Column(name = "fileName")
+    @Column(name = "file_name")
     private String fileName;
 
-    @Column(name = "uploadTime")
+    @Column(name = "upload_time")
     private String uploadTime;
 }
