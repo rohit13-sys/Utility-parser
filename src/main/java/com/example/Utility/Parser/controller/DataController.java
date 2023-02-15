@@ -1,6 +1,5 @@
 package com.example.Utility.Parser.controller;
 
-import com.example.Utility.Parser.dto.XMLDataRequest;
 import com.example.Utility.Parser.dto.XmlDataResponse;
 import com.example.Utility.Parser.service.XMLParserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
@@ -64,15 +62,23 @@ public class DataController {
 
 
     @GetMapping("/getXmlData")
-    public ResponseEntity<List<XmlDataResponse>> xmlDataByName(@RequestParam(name = "newsPaperName", required = false) String newsPaperName , Pageable pageable) {
+    public ResponseEntity<List<XmlDataResponse>> xmlDataByName(@RequestParam(name = "newsPaperName", required = false) String newsPaperName , Pageable pageable,
+    @RequestParam(name = "pageNo", required = false) Integer page,@RequestParam(name = "size", required = false) Integer size) {
         List<XmlDataResponse> response = new ArrayList<>();
-        String currentDirectory = System.getProperty("user.dir");
-        System.out.println(currentDirectory);
         if(newsPaperName!=null){
-            response=xmlParserService.xmlData(newsPaperName,pageable);
+            if(page==null || size==null){
+                response=xmlParserService.xmlData(newsPaperName, pageable);
+            }else {
+                response=xmlParserService.xmlData(newsPaperName, PageRequest.of(page, size));
+            }
+
             System.out.println(response.size());
         }else {
-            response=xmlParserService.allXmlData(pageable);
+            if(page==null || size==null){
+                response=xmlParserService.allXmlData(pageable);
+            }else {
+                response=xmlParserService.allXmlData(PageRequest.of(page, size));
+            }
             System.out.println(response.size());
         }
 

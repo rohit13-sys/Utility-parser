@@ -82,7 +82,7 @@ public class XMLParserServiceImpl implements XMLParserService {
     public List<XmlDataResponse> xmlData(String newsPaperName,Pageable pageable) {
         List<XmlDataResponse> response = new ArrayList<>();
         List<XmlData> dataList;
-        Page<XmlData> list = dataRepository.findAllByNewsPaperNameContains(newsPaperName,pageable);
+        Page<XmlData> list = dataRepository.findAllByNewsPaperNameContains(newsPaperName,PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
         List<XmlData> data=list.getContent();
         response=data.stream().map(this::mapToResponse).collect(Collectors.toList());
         return response;
@@ -162,7 +162,7 @@ public class XMLParserServiceImpl implements XMLParserService {
 
     @Override
     public List<XmlDataResponse> allXmlData(Pageable pageable) {
-        Page<XmlData> page = dataRepository.findAll(pageable);
+        Page<XmlData> page = dataRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
         List<XmlData> pageData=page.getContent();
         List<XmlDataResponse> response=pageData.stream().map(this::mapToResponse).collect(Collectors.toList());
         return response;
